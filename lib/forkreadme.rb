@@ -4,5 +4,6 @@
 module ForkReadme
 end
 
+require "forkreadme/errors"
 require "forkreadme/generator"
 require "forkreadme/version"

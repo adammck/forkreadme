@@ -8,32 +8,43 @@ module ForkReadme
   class Generator
     include URI::REGEXP::PATTERN
 
-    def readme(dir)
-      repo_name = github_repo_name Dir.pwd + "/../developer.github.com/"
-      repo = octokit.repo repo_name
-  
-      unless repo.fork
-        say "Not a fork: #{repo_name}"
-        return
+    def initialize dir
+      @dir = dir
+    end
+
+    def readme
+      repo_name = github_repo_name @dir
+
+      if repo_name.empty?
+        raise NotRepo.new "Not a GitHub repo: #{@dir}"
       end
-  
+
+      repo = octokit.repo repo_name
+
+      unless repo.fork
+        raise NotFork.new "Not a GitHub fork: #{repo_name}"
+      end
+
       parent_name = full_name repo.parent
       parent = octokit.repo parent_name
-  
-      puts "This is a fork of [#{parent.name.capitalize}] (#{parent.html_url}), with pull requests:"
-      puts
-  
+
+      s = []
+      s << "This is a fork of [#{parent.name}] (#{parent.html_url}), with pull requests:"
+      s << ""
+
       logins = collaborator_logins repo
       my_pulls = pull_requests(parent).select do |pull|
         pull.user and logins.include?(pull.user.login)
       end
-  
+
       my_pulls.each do |short_pull|
         pull = pull_request(parent, short_pull.number)
         if repo_name == full_name(pull.head.repo)
-          puts " * [#{pull.title}] (#{pull.html_url})"
+          s << " * [#{pull.title}] (#{pull.html_url})"
         end
       end
+
+      s.join "\n"
     end
   
   

@@ -4,17 +4,22 @@
 require "forkreadme"
 require "thor"
 
-class App < Thor
-  
-  desc "generate [DIR]", "generate a README for a GitHub fork repo."
-  method_option :dir, :default=>nil
-  def generate dir
-    if dir.nil?
-      dir = Dir.pwd
-    end
+module ForkReadme
+  class App < Thor
 
-    puts Generator.readme(dir)
+    desc "generate [DIR]", "Generate a README for a GitHub fork repo"
+    method_option :path, :default=>"."
+    def generate path=""
+      begin
+        dir = File.expand_path path, Dir.pwd
+        puts Generator.new(dir).readme
+
+      rescue ForkReadme::Error => err
+        $stderr.puts err
+        exit false
+      end
+    end
   end
 end
 
-App.start
+ForkReadme::App.start

@@ -6,7 +6,6 @@ require "octokit"
 
 class Test < Thor
   include URI::REGEXP::PATTERN
-  SCP_LIKE_URL = "^(#{USERINFO})@(#{HOST}):(#{REL_PATH})$"
 
   desc "readme", "generate a README"
   def readme
@@ -90,11 +89,11 @@ class Test < Thor
   def parse_url url
     begin
       URI.parse(url)
-  
+
     rescue URI::InvalidURIError
-      if m = url.match(SCP_LIKE_URL)
+      if m = url.match("^(#{USERINFO})@(#{HOST}):(#{REL_PATH})$")
         URI::Generic.new "ssh", m[1], m[2], 22, nil, m[3], nil, nil, nil
-  
+
       else
         raise
       end

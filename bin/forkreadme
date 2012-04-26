@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+# vim: et ts=2 sw=2
+
+require "forkreadme"
+require "thor"
+
+class App < Thor
+  
+  desc "generate [DIR]", "generate a README for a GitHub fork repo."
+  method_option :dir, :default=>nil
+  def generate dir
+    if dir.nil?
+      dir = Dir.pwd
+    end
+
+    puts Generator.readme(dir)
+  end
+end
+
+App.start

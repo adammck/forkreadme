@@ -32,4 +32,3 @@ Here's an [example of the output] [example].
 [repo]:    https://github.com/adammck/forkreadme
 [license]: https://raw.github.com/adammck/forkreadme/master/LICENSE
 [example]: https://github.com/adammck/grit
-⁣⁣⁣

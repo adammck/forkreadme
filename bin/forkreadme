@@ -2,24 +2,23 @@
 # vim: et ts=2 sw=2
 
 require "forkreadme"
-require "thor"
+require "trollop"
 
-module ForkReadme
-  class App < Thor
+BANNER = <<EOT
+Blah blah blah.
+EOT
 
-    desc "generate [DIR]", "Generate a README for a GitHub fork repo"
-    method_option :path, :default=>"."
-    def generate path=""
-      begin
-        dir = File.expand_path path, Dir.pwd
-        puts Generator.new(dir).readme
-
-      rescue ForkReadme::Error => err
-        $stderr.puts err
-        exit false
-      end
-    end
-  end
+opts = Trollop::options do
+  banner BANNER
+  opt :path, "Path to the repo", :short=>"p", :default=>"."
+  opt :pullstatus, "Include pullstat.us images", :short=>"i", :type=>:bool, :default=>true
 end
 
-ForkReadme::App.start
+begin
+  dir = File.expand_path opts[:path], Dir.pwd
+  puts ForkReadme::Generator.new(dir, opts[:pullstatus]).readme
+
+rescue ForkReadme::Error => err
+  $stderr.puts err
+  exit false
+end

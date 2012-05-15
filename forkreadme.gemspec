@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Generate useful READMEs for GitHub forks}
   gem.homepage      = "https://github.com/adammck/forkreadme"
 
-  gem.add_dependency "thor", "~> 0.14.6"
+  gem.add_dependency "trollop", "~> 1.16.2"
   gem.add_dependency "octokit", "~> 1.0.2"
 
   gem.files         = `git ls-files`.split($\)

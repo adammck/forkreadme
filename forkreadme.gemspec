@@ -6,6 +6,7 @@ require File.expand_path("../lib/forkreadme/version", __FILE__)
 Gem::Specification.new do |gem|
   gem.name          = "forkreadme"
   gem.version       = ForkReadme::VERSION
+  gem.license       = "MIT"
 
   gem.authors       = ["Adam Mckaig"]
   gem.email         = ["adam.mckaig@gmail.com"]

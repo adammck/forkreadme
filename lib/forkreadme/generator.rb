@@ -79,14 +79,6 @@ module ForkReadme
       "!" + link_to(alt_text, href)
     end
 
-    # Private: Returns an Array containing the logins of all collaborators for
-    # an Octokit repo.
-    def collaborator_logins repo
-      octokit.collabs(full_name repo).map do |user|
-        user.login
-      end
-    end
-
     # Private: Returns the URL of the status image (via pullstat.us) for an
     # Octokit pull request.
     def status_image pull_request

@@ -22,7 +22,7 @@ path = ARGV.shift || "."
 
 begin
   dir = File.expand_path path, Dir.pwd
-  puts ForkReadme::Generator.new(dir, opts[:pullstatus]).readme
+  puts ForkReadme::Generator.new(dir).readme(opts[:pullstatus])
 
 rescue ForkReadme::Error => err
   $stderr.puts err

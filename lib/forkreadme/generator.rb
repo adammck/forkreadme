@@ -8,17 +8,16 @@ module ForkReadme
   class Generator
     include URI::REGEXP::PATTERN
 
-    def initialize path, with_images
+    def initialize path
       @path = path
-      @with_images = with_images
 
       repo_name = github_repo_name @path
       @repo = octokit.repo repo_name
       @parent = parent_of @repo
     end
 
-    def readme
-      intro + "\n\n" + (links.join "\n")
+    def readme with_images=false
+      intro + "\n\n" + (links(with_images).join "\n")
     end
 
     # Public: Returns the introduction paragraph.
@@ -27,21 +26,30 @@ module ForkReadme
       "This is a fork of #{link}, with pull requests:"
     end
 
-    # Public: Returns a paragraph summarizing the pull requests.
-    def links
+    # Public: Generate a paragraph summarizing the pull requests.
+    #
+    # with_images - Include pullstat.us images?
+    #
+    # Returns the paragraph as Markdown.
+    def links with_images
       pull_requests(@parent).select do |pull|
         pull.head.repo.id == @repo.id
 
       end.map do |pull|
-        "* " + line_for(pull, @with_images)
+        "* " + line_for(pull, with_images)
       end
     end
 
     private
 
-    # Private: Returns a line of Markdown summarizing a pull request.
-    def line_for pull_request, with_images
-      img = if with_images
+    # Private: Generate a one-line summary of a pull request.
+    #
+    # pull_request - The Octokit pull request to be summarized.
+    # with_image   - Include a pullstat.us image?
+    #
+    # Returns the line as Markdown.
+    def line_for pull_request, with_image
+      img = if with_image
         image "Status of ##{pull_request.number}", status_image(pull_request)
       end
 
@@ -50,14 +58,14 @@ module ForkReadme
     end
 
     # Private: Returns the parent repo (as an Octokit repo) of an Octokit repo,
-    # or raises NotFork if the repo does not have a parent.
+    # or raises NotGitHubFork if the repo does not have a parent.
     def parent_of child_repo
       if child_repo.parent
         parent_repo_name = full_name child_repo.parent
         octokit.repo parent_repo_name
       else
         child_name = full_name child_repo
-        raise NotFork.new "Not a GitHub fork: #{child_name}"
+        raise NotGitHubFork.new "Not a GitHub fork: #{child_name}"
       end
     end
 
@@ -98,7 +106,13 @@ module ForkReadme
     # Private: Returns the full GitHub repo name (e.g. adammck/forkreadme) of a
     # Git working directory, or raises NotGitHubRepo.
     def github_repo_name path
-      clone_url = parse_url remote_url path
+      origin = remote_origin_url path
+
+      if origin == ""
+        raise NotGitHubRepo.new "No remote origin URL: #{path}"
+      end
+
+      clone_url = parse_url origin
 
       if clone_url.host.downcase != "github.com"
         raise NotGitHubRepo.new "Not a GitHub repo: #{path}"
@@ -117,9 +131,9 @@ module ForkReadme
       @ok ||= Octokit.new(:auto_traversal=>true)
     end
   
-    # Private: Returns the remote clone URL of a Git working directory, or
-    # raises NotGitRepo.
-    def remote_url path
+    # Private: Returns the remote origin URL of a Git working directory (which
+    # may be an empty string, if the repo has no origin) or raises NotGitRepo.
+    def remote_origin_url path
       unless is_working_dir path
         raise NotGitRepo.new "Not a Git repo: #{path}"
       end

@@ -5,17 +5,23 @@ require "forkreadme"
 require "trollop"
 
 BANNER = <<EOT
-Blah blah blah.
+ForkReadme generates a README.md for GitHub forks, containing a list of the pull requests submitted upstream.
+
+Usage:
+  forkreadme [options] [path]
+
+Options:
 EOT
 
 opts = Trollop::options do
   banner BANNER
-  opt :path, "Path to the repo", :short=>"p", :default=>"."
   opt :pullstatus, "Include pullstat.us images", :short=>"i", :type=>:bool, :default=>true
 end
 
+path = ARGV.shift || "."
+
 begin
-  dir = File.expand_path opts[:path], Dir.pwd
+  dir = File.expand_path path, Dir.pwd
   puts ForkReadme::Generator.new(dir, opts[:pullstatus]).readme
 
 rescue ForkReadme::Error => err

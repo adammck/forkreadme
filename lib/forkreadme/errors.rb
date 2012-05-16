@@ -4,10 +4,13 @@
 module ForkReadme
   class Error < StandardError
   end
-  
-  class NotRepo < Error
+
+  class NotGitRepo < Error
   end
-  
+
+  class NotGitHubRepo < Error
+  end
+
   class NotFork < Error
   end
 end

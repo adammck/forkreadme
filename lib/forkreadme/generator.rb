@@ -96,16 +96,15 @@ module ForkReadme
     end
   
     # Private: Returns the full GitHub repo name (e.g. adammck/forkreadme) of a
-    # Git working directory, or raises NotRepo.
+    # Git working directory, or raises NotGitHubRepo.
     def github_repo_name path
       clone_url = parse_url remote_url path
 
-      if clone_url.host.downcase == "github.com"
-        chop_extension chop_leading_slash clone_url.path
-
-      else
-        raise NotRepo.new "Not a GitHub repo: #{path}"
+      if clone_url.host.downcase != "github.com"
+        raise NotGitHubRepo.new "Not a GitHub repo: #{path}"
       end
+
+      chop_extension chop_leading_slash clone_url.path
     end
   
     # Private: Returns the full GitHub repo name of an Octokit repo.
@@ -118,8 +117,13 @@ module ForkReadme
       @ok ||= Octokit.new(:auto_traversal=>true)
     end
   
-    # Private: Returns the remote url of a Git working directory.
+    # Private: Returns the remote clone URL of a Git working directory, or
+    # raises NotGitRepo.
     def remote_url path
+      unless is_working_dir path
+        raise NotGitRepo.new "Not a Git repo: #{path}"
+      end
+
       %x{git config --file #{path}/.git/config --get remote.origin.url}
     end
   
@@ -137,6 +141,11 @@ module ForkReadme
           raise
         end
       end
+    end
+
+    # Private: Return true if +path+ is a Git working directory.
+    def is_working_dir path
+      File.exist? File.expand_path ".git", path
     end
 
     # Private: Returns a filename with the extension removed.

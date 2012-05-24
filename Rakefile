@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env rake
 # vim: et ts=2 sw=2
 
 require "rake/testtask"
@@ -7,29 +7,44 @@ Rake::TestTask.new do |t|
   t.pattern = "test/test_*.rb"
 end
 
-def fixture name
-  File.join File.dirname(__FILE__), "test", "fixtures", name
-end
+# Check fixtures before running tests.
+task :test => "fixtures:check"
 
-desc "Fetch the test fixtures"
-task :fixtures do
-  empty = fixture "empty"
-  unless File.exists? empty
-    %x[mkdir #{empty}]
+
+namespace :fixtures do
+  def fixture name
+    File.join File.dirname(__FILE__), "test", "fixtures", name
   end
 
-  git_repo = fixture "git_repo"
-  unless File.exists? git_repo
-    %x[git init #{git_repo}]
+  desc "Check for test fixtures"
+  task :check do
+    unless File.exists? fixture "empty"
+      puts "Fixtures have not been fetched yet."
+      puts "Run $(rake fixtures:fetch) first."
+      exit 1
+    end
   end
 
-  github_repo = fixture "github_repo"
-  unless File.exists? github_repo
-    %x[git clone git://github.com/forkreadme-test-user-1/test.git #{github_repo}]
-  end
+  desc "Fetch test fixtures"
+  task :fetch do
+    empty = fixture "empty"
+    unless File.exists? empty
+      %x[mkdir #{empty}]
+    end
 
-  github_fork = fixture "github_fork"
-  unless File.exists? github_fork
-    %x[git clone git://github.com/forkreadme-test-user-2/test.git #{github_fork}]
+    git_repo = fixture "git_repo"
+    unless File.exists? git_repo
+      %x[git init #{git_repo}]
+    end
+
+    github_repo = fixture "github_repo"
+    unless File.exists? github_repo
+      %x[git clone git://github.com/forkreadme-test-user-1/test.git #{github_repo} &>/dev/null]
+    end
+
+    github_fork = fixture "github_fork"
+    unless File.exists? github_fork
+      %x[git clone git://github.com/forkreadme-test-user-2/test.git #{github_fork} &>/dev/null]
+    end
   end
 end

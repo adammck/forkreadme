@@ -156,12 +156,12 @@ module ForkReadme
 
     # Private: Returns a filename with the extension removed.
     def chop_extension filename
-      filename.sub /\.\w+$/, ""
+      filename.sub %r{\.\w+$}, ""
     end
 
     # Private: Returns a filename with the leading slash removed.
     def chop_leading_slash filename
-      filename.sub /^\//, ""
+      filename.sub %r{^/}, ""
     end
   end
 end

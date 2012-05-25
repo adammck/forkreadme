@@ -33,7 +33,7 @@ module ForkReadme
     # Returns the paragraph as Markdown.
     def links with_images
       pull_requests(@parent).select do |pull|
-        pull.head.repo.id == @repo.id
+        @repo.id == (pull.head.repo && pull.head.repo.id)
 
       end.map do |pull|
         "* " + line_for(pull, with_images)

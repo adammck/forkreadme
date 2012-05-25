@@ -18,23 +18,27 @@ describe Generator do
     end
 
     it "rejects github repos which are not forks" do
-      assert_raises(NotGitHubFork) do
-        Generator.new fixture("github_repo")
+      VCR.use_cassette("github_repo") do
+        assert_raises(NotGitHubFork) do
+          Generator.new fixture("github_repo")
+        end
       end
     end
   end
 
   describe "README" do
-    before do
-      @generator = Generator.new fixture("github_fork")
-    end
-
     it "generates a readme without images" do
-      assert_equal File.read(fixture("README_without_images.md")), @generator.readme
+      VCR.use_cassette("github_fork") do
+        g = Generator.new fixture("github_fork")
+        assert_equal File.read(fixture("README_without_images.md")), g.readme
+      end
     end
 
     it "generates a readme with images" do
-      assert_equal File.read(fixture("README_with_images.md")), @generator.readme(true)
+      VCR.use_cassette("github_fork") do
+        g = Generator.new fixture("github_fork")
+        assert_equal File.read(fixture("README_with_images.md")), g.readme(true)
+      end
     end
   end
 end

@@ -17,6 +17,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "octokit", "~> 1.0.2"
 
   gem.add_development_dependency "simplecov", "~> 0.6.4"
+  gem.add_development_dependency "vcr", "~> 2.1.1"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

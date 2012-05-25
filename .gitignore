@@ -5,3 +5,4 @@ test/fixtures/empty
 test/fixtures/git_repo
 test/fixtures/github_repo
 test/fixtures/github_fork
+test/fixtures/cassettes

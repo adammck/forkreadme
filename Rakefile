@@ -1,6 +1,7 @@
 #!/usr/bin/env rake
 # vim: et ts=2 sw=2
 
+require "fileutils"
 require "rake/testtask"
 
 Rake::TestTask.new do |t|
@@ -45,6 +46,13 @@ namespace :fixtures do
     github_fork = fixture "github_fork"
     unless File.exists? github_fork
       %x[git clone git://github.com/forkreadme-test-user-2/test.git #{github_fork} &>/dev/null]
+    end
+  end
+
+  desc "Delete test fixtures"
+  task :flush do
+    %w[empty git_repo github_repo github_fork].each do |name|
+      FileUtils.rm_rf fixture name
     end
   end
 end

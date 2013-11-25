@@ -130,7 +130,7 @@ module ForkReadme
         raise NotGitRepo.new "Not a Git repo: #{path}"
       end
 
-      %x{git config --file #{path}/.git/config --get remote.origin.url}
+      %x{git --git-dir=#{path}/.git config --get remote.origin.url}
     end
   
     # Private: Returns a parsed URL. Wraps `URI.parse` with support for Git's

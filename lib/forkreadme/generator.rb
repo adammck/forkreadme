@@ -71,7 +71,7 @@ module ForkReadme
 
     # Private: Returns a link in Markdown format.
     def link_to text, href
-      "[#{text}] (#{href})"
+      "[#{text}](#{href})"
     end
 
     # Private: Returns an image in Markdown format.

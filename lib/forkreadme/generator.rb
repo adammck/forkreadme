@@ -106,7 +106,7 @@ module ForkReadme
 
       clone_url = parse_url origin
 
-      if clone_url.host.downcase != "github.com"
+      if not clone_url.host.downcase.start_with?("github")
         raise NotGitHubRepo.new "Not a GitHub repo: #{path}"
       end
 
@@ -138,11 +138,19 @@ module ForkReadme
     def parse_url url
       begin
         URI.parse(url)
-  
       rescue URI::InvalidURIError
-        if m = url.match("^(#{USERINFO})@(#{HOST}):(#{REL_PATH})$")
-          URI::Generic.new "ssh", m[1], m[2], 22, nil, "/" + m[3], nil, nil, nil
-  
+        if url.start_with?('http')
+          proto, _ = url.split(":")
+        else
+          proto = "ssh"
+        end
+        if u = url.match("(#{USERINFO})@(#{HOST})")
+          user = u[1]
+        else
+          user = "git"
+        end
+        if m = url.match("(#{HOST})(:|\/)(#{REL_PATH})$")
+          URI::Generic.new proto, user, m[1], 22, nil, "/" + m[3], nil, nil, nil
         else
           raise
         end

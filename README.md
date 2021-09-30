@@ -29,10 +29,9 @@ $ gem install forkreadme
 
    ```
    $ git checkout --orphan forkreadme
-   $ git rm -rf .
+   $ git reset --hard
    ```
 
-   The `git rm` part is a bit scary, but it's just clearing the working area.  
    Check out `git help checkout` and search for `--orphan` for more info.
 
 2. Generate the README:
